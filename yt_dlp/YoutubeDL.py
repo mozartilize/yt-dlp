@@ -447,6 +447,10 @@ class YoutubeDL:
                        Actual sleep time will be a random float from range
                        [sleep_interval; max_sleep_interval].
     sleep_interval_subtitles: Number of seconds to sleep before each subtitle download
+    fragment_image_cloaking:
+                       Wheather strip out at the begining up to the length
+                       of the image cloaking signature.
+                       Has value of auto or list of mime:bytes_length separates by comma.
     listformats:       Print an overview of available video formats and exit.
     list_thumbnails:   Print a table of all thumbnails and exit.
     match_filter:      A function that gets called for every video with the signature
@@ -810,6 +814,16 @@ class YoutubeDL:
                 'Set the LC_ALL environment variable to fix this.')
             self.params['restrictfilenames'] = True
 
+        if self.params.get('fragment_image_cloaking') != 'auto':
+            self.params['fragment_image_cloaking'] = {
+                mime: int(length)
+                for mime, length in (
+                    p.split(':') for p in self.params['fragment_image_cloaking'].split(',')
+                )
+            }
+        else:
+            self.params['fragment_image_cloaking'] = {}
+        import pdb; pdb.set_trace()
         self._parse_outtmpl()
 
         # Creating format selector here allows us to catch syntax errors before the extraction
